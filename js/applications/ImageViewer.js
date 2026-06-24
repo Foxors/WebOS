@@ -3,9 +3,9 @@ import { Application } from './Application.js';
 export class ImageViewer extends Application {
     imagePath = null;
 
-    constructor(windowWidth, windowHeight, position, fullscreen, layer, imagePath) {
-        super(windowWidth, windowHeight, position, fullscreen, layer);
-        this.imagePath = imagePath;
+    constructor(data) {
+        super();
+        this.imagePath = data["img"];
     }
 
     init() {

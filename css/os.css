@@ -17,6 +17,7 @@ body {
 
 .window {
     position: absolute;
+    overflow: hidden;
 }
 
 .window.styled {
@@ -83,7 +84,7 @@ body {
     background: #f5c21145;
 }
 
-.window.styled .titleBar .options button#close:hover {
+.window.styled .titleBar .options button#quit:hover {
     background: #e01b2445;
 }
 

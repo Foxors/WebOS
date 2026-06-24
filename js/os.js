@@ -1,41 +1,64 @@
+import { Application } from './applications/Application.js';
 import { ImageViewer } from './applications/ImageViewer.js';
 import { Test } from './applications/Test.js';
 
-class Os {
+class Mosdule {
 
-    windowStartWidth = window.innerWidth / 3;
-    windowStartHeight = window.innerHeight / 3;
-    running_applications = [];
+    availableApplications = [ImageViewer, Test];
+    runningApplications = {};
+    idGen = 0;
 
     constructor() {
         this.init();
     }
 
     init() {
-        this.start_application(new ImageViewer(this.windowStartWidth, this.windowStartHeight, { "x": 0, "y": 0 }, true, 0, "https://fastly.picsum.photos/id/152/3888/2592.jpg?hmac=M1xv1MzO9xjf5-tz1hGR9bQpNt973ANkqfEVDW0-WYU"));
-        this.start_application(new Test(this.windowStartWidth, this.windowStartHeight, { "x": 0, "y": 0 }, false, 0));
+        this.application_start(ImageViewer, undefined, { "x": 0, "y": 0 }, true, { "img": "https://fastly.picsum.photos/id/152/3888/2592.jpg?hmac=M1xv1MzO9xjf5-tz1hGR9bQpNt973ANkqfEVDW0-WYU" });
+        this.application_start(Test);
     }
 
-    start_application(application) {
-        this.running_applications.push(application);
-        application.init();
-        application.htmlParent.setAttribute("windowId", this.running_applications.length - 1);
-        document.body.appendChild(application.htmlParent);
+    application_start(applicationClass,
+        size = { "x": window.innerWidth / 3, "y": window.innerHeight / 3 },
+        pos = { "x": window.innerWidth / 2 - size.x / 2, "y": window.innerHeight / 2 - size.y / 2 },
+        fullScreen = false,
+        data = {}
+    ) {
+        if (!applicationClass instanceof Application) {
+            console.error("Tryed starting a non application as application!");
+            return;
+        }
+
+        if (!applicationClass in this.availableApplications) {
+            console.error("Tryed starting a not available application!");
+            return;
+        }
+
+        let newApplication = new applicationClass(data);
+        newApplication.pid = this.idGen;
+        newApplication.size = size;
+        newApplication.position = pos;
+        newApplication.fullScreen = fullScreen;
+
+        this.runningApplications[this.idGen] = newApplication;
+        newApplication.init();
+        newApplication.htmlParent.setAttribute("windowId", this.idGen);
+        document.body.appendChild(newApplication.htmlParent);
+
+        this.idGen++;
     }
 
-    close_application(application) {
-        application.exit();
-        document.body.removeChild(application.htmlParent);
-        this.running_applications.splice(this.running_applications.indexOf(application), 1);
+    application_kill(pid) {
+        if (typeof (pid) == typeof (Int)) {
+            console.error("Expected a int!");
+            return;
+        }
+
+        let targetApplication = this.runningApplications[pid];
+
+        targetApplication.exit();
+        document.body.removeChild(targetApplication.htmlParent);
+        delete this.runningApplications[pid];
     }
 }
 
-var system = new Os();
-
-export function start_application(application) {
-    system.start_application(application);
-}
-
-export function exit_application(application) {
-    system.close_application(application);
-}
+export var system = new Mosdule();

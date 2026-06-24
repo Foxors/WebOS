@@ -1,62 +1,55 @@
-import { exit_application } from '/js/os.js';
+import { system } from '/js/os.js';
 
 export class Application {
     htmlParent = null;
     htmlContentParent = null;
 
-    windowWidth = 0;
-    windowHeight = 0;
+    size = { "x": null, "y": null };
+    position = { "x": null, "y": null };
 
-    hidden = false;
-    fullscreen = false;
-    layer = 0;
+    minimized = null;
+    fullScreen = null;
 
-    position = { "x": 0, "y": 0 };
-
-    constructor(windowWidth, windowHeight, position, fullscreen, layer) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-        this.position = position;
-        this.fullscreen = fullscreen;
-        this.layer = layer;
-    }
+    pid = null;
 
     /*
-    * Build initial html structure of a base window and register required hadnlers.
+    * Build initial html structure of a base window and register required handlers.
     */
     init(cosmetics = true) {
+        if (typeof (cosmetics) != typeof (true)) {
+            console.error("Expected a boolean!");
+            return;
+        }
+
         this.htmlParent = document.createElement("div");
         this.htmlParent.classList.add("window");
+
         if (cosmetics) {
             this.htmlParent.classList.add("styled");
 
             this.htmlParent.innerHTML = `
-<div class="titleBar" id="titleBar">
-    <p class="title"><!-- Title of indow here --></p>
-    <div class="options">
-        <button id="minimize"><img src="/icons/minimize.svg"></button>
-        <button id="maximize"><img src="/icons/maximize.svg"></button>
-        <button id="close"><img src="/icons/close.svg"></button>
-    </div>
-</div>
-<div class="windowContent"><!-- Content of window here --></div>
-`;
+                <div class="titleBar" id="titleBar">
+                    <p class="title" id="titleText"><!-- Title of indow here --></p>
+                    <div class="options">
+                        <button id="minimize"><img src="/icons/minimize.svg"></button>
+                        <button id="maximize"><img src="/icons/maximize.svg"></button>
+                        <button id="quit"><img src="/icons/close.svg"></button>
+                    </div>
+                </div>
+                <div class="windowContent"><!-- Content of window here --></div>
+            `;
 
-            // Register event listeners
+            // Register event listeners for topbar.
             // Dragging
             this.dragApplication(this);
             // Minimising
-            this.htmlParent.querySelector("#minimize").addEventListener("click", this.toggleToBackground.bind(this));
+            this.htmlParent.querySelector("#minimize").addEventListener("click", this.moveToBackground.bind(this));
             // Maximising
             this.htmlParent.querySelector("#maximize").addEventListener("click", this.toggleFullScreen.bind(this));
             // Quit
-            this.htmlParent.querySelector("#close").addEventListener("click", this.askToQuit.bind(this));
-
-
+            this.htmlParent.querySelector("#quit").addEventListener("click", this.askToQuit.bind(this));
         } else {
-            this.htmlParent.innerHTML = `
-<div class="windowContent"><!-- Content of window here --></div>
-`;
+            this.htmlParent.innerHTML = `<div class="windowContent"><!-- Content of window here --></div>`;
         }
 
         // Notes down where content is for better acces afterwards.
@@ -67,7 +60,19 @@ export class Application {
     }
 
     /*
-     * Make applications dragable with this function.
+     * Set title of window.
+     */
+    setTilte(newTitle) {
+        if (typeof (newTitle) != typeof ("")) {
+            console.error("Expected a string!");
+            return;
+        }
+
+        this.htmlParent.querySelector("#titleText").innerText = newTitle;
+    }
+
+    /*
+     * Make applications dragable.
      */
     dragApplication(application) {
         var lastMouseX = 0;
@@ -76,7 +81,7 @@ export class Application {
         var deltaY = 0;
 
         // Make draggable
-        let titleBar = application.htmlParent.getElementsByClassName("titleBar")[0];
+        let titleBar = application.htmlParent.querySelector("#titleBar");
         if (titleBar != null) {
             titleBar.onmousedown = startDragging;
         }
@@ -124,26 +129,29 @@ export class Application {
     }
 
     /*
-     * Toggle if the application is displayed or in background running.
+     * Show application to user in case it was minimized.
      */
-    toggleToBackground() {
-        if (this.hidden) {
-            this.hidden = false;
-            this.htmlParent.style.display = "auto";
-        } else {
-            this.hidden = true;
-            this.htmlParent.style.display = "none";
-        }
+    moveToDesktop() {
+        this.minimized = false;
+        this.htmlParent.style.display = "auto";
+    }
+
+    /*
+     * Hide application from user. (minimizing)
+     */
+    moveToBackground() {
+        this.minimized = true;
+        this.htmlParent.style.display = "none";
     }
 
     /*
      * Toggle between full screen and window mode.
      */
     toggleFullScreen() {
-        if (this.fullscreen) {
-            this.fullscreen = false;
+        if (this.fullScreen) {
+            this.fullScreen = false;
         } else {
-            this.fullscreen = true;
+            this.fullScreen = true;
         }
 
         this.updateSize();
@@ -154,7 +162,7 @@ export class Application {
     * Updaing the position of actual html tag.
     */
     updatePosition() {
-        if (this.fullscreen) {
+        if (this.fullScreen) {
             this.htmlParent.style.left = "0px";
             this.htmlParent.style.top = "0px";
         } else {
@@ -167,28 +175,20 @@ export class Application {
     * Updatin the size of actual html tag.
     */
     updateSize() {
-        if (this.fullscreen) {
+        if (this.fullScreen) {
             this.htmlParent.style.width = "100vw";
             this.htmlParent.style.height = "100vh";
         } else {
-            this.htmlParent.style.width = this.windowWidth + "px";
-            this.htmlParent.style.height = this.windowHeight + "px";
+            this.htmlParent.style.width = this.size.x + "px";
+            this.htmlParent.style.height = this.size.y + "px";
         }
     }
 
     /*
-    * Update layer position.
-    */
-    updateLayer() {
-        this.htmlParent.style.zindex = this.layer;
-        this.htmlParent.style.height = this.layer;
-    }
-
-    /*
-     * Ask the system to stop thos program.
+     * Ask the system to stop this program.
      */
     askToQuit() {
-        exit_application(this);
+        system.application_kill(this.pid);
     }
 
     /*
@@ -200,9 +200,11 @@ export class Application {
         document.onmousedown = null;
         document.onmouseup = null;
         document.onmousemove = null;
-        this.htmlParent.querySelector("#minimize").removeEventListener("click", this.toggleToBackground.bind(this));
-        this.htmlParent.querySelector("#maximize").removeEventListener("click", this.toggleFullScreen.bind(this));
-        this.htmlParent.querySelector("#close").removeEventListener("click", this.askToQuit.bind(this));
 
+        if (this.htmlParent.querySelector("#titleBar") != undefined) {
+            this.htmlParent.querySelector("#minimize").removeEventListener("click", this.moveToBackground.bind(this));
+            this.htmlParent.querySelector("#maximize").removeEventListener("click", this.toggleFullScreen.bind(this));
+            this.htmlParent.querySelector("#quit").removeEventListener("click", this.askToQuit.bind(this));
+        }
     }
 }
