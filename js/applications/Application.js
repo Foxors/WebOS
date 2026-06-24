@@ -101,6 +101,8 @@ export class Application {
             // Register event listeners
             // Dragging
             dragApplication(this);
+            // Minimising
+            this.htmlParent.querySelector("#minimize").addEventListener("click", this.toggleToBackground.bind(this));
             // Maximising
             this.htmlParent.querySelector("#maximize").addEventListener("click", this.toggleFullScreen.bind(this));
 
@@ -120,11 +122,20 @@ export class Application {
 
     }
 
+    toggleToBackground() {
+        if (this.hidden) {
+            this.hidden = false;
+            this.htmlParent.style.display = "auto";
+        } else {
+            this.hidden = true;
+            this.htmlParent.style.display = "none";
+        }
+    }
+
     /*
      * Toggle between full screen and window mode.
      */
     toggleFullScreen() {
-        console.log("test");
         if (this.fullscreen) {
             this.fullscreen = false;
         } else {
