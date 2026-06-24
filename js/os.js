@@ -3,8 +3,8 @@ import { Test } from './applications/Test.js';
 
 class Os {
 
-    windowStartWidth = 128;
-    windowStartHeight = 60;
+    windowStartWidth = window.innerWidth / 3;
+    windowStartHeight = window.innerHeight / 3;
     running_applications = [];
 
     constructor() {

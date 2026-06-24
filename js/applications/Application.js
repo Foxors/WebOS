@@ -10,6 +10,8 @@ export class Application {
 
     position = { "x": 0, "y": 0 };
 
+    dragged = false;
+
     constructor(windowWidth, windowHeight, position, fullscreen, layer) {
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
@@ -19,7 +21,7 @@ export class Application {
     }
 
     /*
-    * Build initial html structure of a base window.
+    * Build initial html structure of a base window and register required hadnlers.
     */
     init(cosmetics = true) {
         this.htmlParent = document.createElement("div");
@@ -31,9 +33,9 @@ export class Application {
 <div class="titleBar">
     <p class="title"><!-- Title of indow here --></p>
     <div class="options">
-        <button id="minimize"></button>
-        <button id="maximize"></button>
-        <button id="close"></button>
+        <button id="minimize"><img src="/icons/minimize.svg"></button>
+        <button id="maximize"><img src="/icons/maximize.svg"></button>
+        <button id="close"><img src="/icons/close.svg"></button>
     </div>
 </div>
 <div class="windowContent"><!-- Content of window here --></div>

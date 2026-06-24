@@ -11,7 +11,7 @@ export class ImageViewer extends Application {
     init() {
         super.init(false);
 
-        this.htmlParent.classList.add("ImageViewer");
+        this.htmlContentParent.classList.add("ImageViewer");
         this.htmlContentParent.innerHTML = '<img src="' + this.imagePath + '">';
     }
 }
