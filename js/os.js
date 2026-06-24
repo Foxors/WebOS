@@ -19,6 +19,7 @@ class Os {
     start_application(application) {
         this.running_applications.push(application);
         application.init();
+        application.htmlParent.setAttribute("windowId", this.running_applications.length - 1);
         document.body.appendChild(application.htmlParent);
     }
 

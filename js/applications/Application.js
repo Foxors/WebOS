@@ -1,3 +1,58 @@
+function dragApplication(application) {
+    var lastMouseX = 0;
+    var lastMouseY = 0;
+    var deltaX = 0;
+    var deltaY = 0;
+
+    // Make draggable
+    let titleBar = application.htmlParent.getElementsByClassName("titleBar")[0];
+    if (titleBar != null) {
+        titleBar.onmousedown = startDragging;
+    }
+
+    function startDragging(e) {
+        if (e.target.nodeName == "IMG" || e.target.nodeName == "BUTTON") {
+            console.log(e.target.nodeName);
+            return;
+        }
+
+        e.preventDefault();
+
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+
+        console.log("start test");
+
+        document.onmouseup = stopDragging;
+        document.onmousemove = dragWindow;
+    }
+
+    function dragWindow(e) {
+        e.preventDefault();
+
+        deltaX = lastMouseX - e.clientX;
+        deltaY = lastMouseY - e.clientY;
+
+        console.log("test");
+
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+
+        application.position.x -= deltaX;
+        application.position.y -= deltaY;
+
+        application.updatePosition();
+    }
+
+    function stopDragging(e) {
+        e.preventDefault();
+
+        console.log("end test");
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
 export class Application {
     htmlParent = null;
     htmlContentParent = null;
@@ -30,7 +85,7 @@ export class Application {
             this.htmlParent.classList.add("styled");
 
             this.htmlParent.innerHTML = `
-<div class="titleBar">
+<div class="titleBar" id="titleBar">
     <p class="title"><!-- Title of indow here --></p>
     <div class="options">
         <button id="minimize"><img src="/icons/minimize.svg"></button>
@@ -51,13 +106,17 @@ export class Application {
 
         this.updateSize();
         this.updatePosition();
+
+        dragApplication(this);
+
     }
 
     /*
     * Updaing the position of actual html tag.
     */
     updatePosition() {
-        this.htmlParent.style.transform = "translate(" + this.position.x + "px, " + this.position.y + "px)";
+        this.htmlParent.style.left = this.position.x + "px";
+        this.htmlParent.style.top = this.position.y + "px";
     }
 
     /*
