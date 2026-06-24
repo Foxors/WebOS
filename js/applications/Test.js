@@ -1,12 +1,24 @@
 import { Application } from './Application.js';
 
+import { start_application } from '/js/os.js';
+
 export class Test extends Application {
     init() {
         super.init();
 
-        this.htmlContentParent.classList.add("Test");
-        this.htmlContentParent.innerHTML = '<p>Hello, world!</p>';
-
         this.htmlParent.getElementsByClassName("title")[0].innerText = "Hello, world! Test";
+
+        this.htmlContentParent.classList.add("Test");
+        this.htmlContentParent.innerHTML = `
+<h1>Hello, world!</h1>
+<h2>Some text</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<h2>Debbuging options</h2>
+<button id="newWin">New window</button>
+`;
+        this.htmlContentParent.querySelector("#newWin").addEventListener("click", (e) => {
+            start_application(new Test(this.windowWidth, this.windowHeight, JSON.parse(JSON.stringify(this.position)), false, 0));
+        });
+
     }
 }

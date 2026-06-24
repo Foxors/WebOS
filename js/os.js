@@ -31,3 +31,11 @@ class Os {
 }
 
 var system = new Os();
+
+export function start_application(application) {
+    system.start_application(application);
+}
+
+export function exit_application(application) {
+    system.close_application(application);
+}

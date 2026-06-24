@@ -1,60 +1,4 @@
-/*
- * Make applications dragable with this function.
- */
-function dragApplication(application) {
-    var lastMouseX = 0;
-    var lastMouseY = 0;
-    var deltaX = 0;
-    var deltaY = 0;
-
-    // Make draggable
-    let titleBar = application.htmlParent.getElementsByClassName("titleBar")[0];
-    if (titleBar != null) {
-        titleBar.onmousedown = startDragging;
-    }
-
-    function startDragging(e) {
-        if (e.target.nodeName == "IMG" || e.target.nodeName == "BUTTON") {
-            return;
-        }
-
-        // Cancel when in full screen
-        console.log(application.fullscreen);
-        if (application.fullscreen) {
-            return;
-        }
-
-        e.preventDefault();
-
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-
-        document.onmouseup = stopDragging;
-        document.onmousemove = dragWindow;
-    }
-
-    function dragWindow(e) {
-        e.preventDefault();
-
-        deltaX = lastMouseX - e.clientX;
-        deltaY = lastMouseY - e.clientY;
-
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-
-        application.position.x -= deltaX;
-        application.position.y -= deltaY;
-
-        application.updatePosition();
-    }
-
-    function stopDragging(e) {
-        e.preventDefault();
-
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
+import { exit_application } from '/js/os.js';
 
 export class Application {
     htmlParent = null;
@@ -100,11 +44,13 @@ export class Application {
 
             // Register event listeners
             // Dragging
-            dragApplication(this);
+            this.dragApplication(this);
             // Minimising
             this.htmlParent.querySelector("#minimize").addEventListener("click", this.toggleToBackground.bind(this));
             // Maximising
             this.htmlParent.querySelector("#maximize").addEventListener("click", this.toggleFullScreen.bind(this));
+            // Quit
+            this.htmlParent.querySelector("#close").addEventListener("click", this.askToQuit.bind(this));
 
 
         } else {
@@ -118,10 +64,68 @@ export class Application {
 
         this.updateSize();
         this.updatePosition();
-
-
     }
 
+    /*
+     * Make applications dragable with this function.
+     */
+    dragApplication(application) {
+        var lastMouseX = 0;
+        var lastMouseY = 0;
+        var deltaX = 0;
+        var deltaY = 0;
+
+        // Make draggable
+        let titleBar = application.htmlParent.getElementsByClassName("titleBar")[0];
+        if (titleBar != null) {
+            titleBar.onmousedown = startDragging;
+        }
+
+        function startDragging(e) {
+            if (e.target.nodeName == "IMG" || e.target.nodeName == "BUTTON") {
+                return;
+            }
+
+            // Cancel when in full screen
+            if (application.fullscreen) {
+                return;
+            }
+
+            e.preventDefault();
+
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            document.onmouseup = stopDragging;
+            document.onmousemove = dragWindow;
+        }
+
+        function dragWindow(e) {
+            e.preventDefault();
+
+            deltaX = lastMouseX - e.clientX;
+            deltaY = lastMouseY - e.clientY;
+
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            application.position.x -= deltaX;
+            application.position.y -= deltaY;
+
+            application.updatePosition();
+        }
+
+        function stopDragging(e) {
+            e.preventDefault();
+
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+    /*
+     * Toggle if the application is displayed or in background running.
+     */
     toggleToBackground() {
         if (this.hidden) {
             this.hidden = false;
@@ -181,8 +185,24 @@ export class Application {
     }
 
     /*
+     * Ask the system to stop thos program.
+     */
+    askToQuit() {
+        exit_application(this);
+    }
+
+    /*
     * Removes window again.
+    * (Please ask the main system and do not do this manually)
     */
     exit() {
+        // Unregister all event listeners.
+        document.onmousedown = null;
+        document.onmouseup = null;
+        document.onmousemove = null;
+        this.htmlParent.querySelector("#minimize").removeEventListener("click", this.toggleToBackground.bind(this));
+        this.htmlParent.querySelector("#maximize").removeEventListener("click", this.toggleFullScreen.bind(this));
+        this.htmlParent.querySelector("#close").removeEventListener("click", this.askToQuit.bind(this));
+
     }
 }
