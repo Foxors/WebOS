@@ -1,3 +1,6 @@
+/*
+ * Make applications dragable with this function.
+ */
 function dragApplication(application) {
     var lastMouseX = 0;
     var lastMouseY = 0;
@@ -12,7 +15,12 @@ function dragApplication(application) {
 
     function startDragging(e) {
         if (e.target.nodeName == "IMG" || e.target.nodeName == "BUTTON") {
-            console.log(e.target.nodeName);
+            return;
+        }
+
+        // Cancel when in full screen
+        console.log(application.fullscreen);
+        if (application.fullscreen) {
             return;
         }
 
@@ -20,8 +28,6 @@ function dragApplication(application) {
 
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
-
-        console.log("start test");
 
         document.onmouseup = stopDragging;
         document.onmousemove = dragWindow;
@@ -32,8 +38,6 @@ function dragApplication(application) {
 
         deltaX = lastMouseX - e.clientX;
         deltaY = lastMouseY - e.clientY;
-
-        console.log("test");
 
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
@@ -47,7 +51,6 @@ function dragApplication(application) {
     function stopDragging(e) {
         e.preventDefault();
 
-        console.log("end test");
         document.onmouseup = null;
         document.onmousemove = null;
     }
@@ -60,12 +63,11 @@ export class Application {
     windowWidth = 0;
     windowHeight = 0;
 
+    hidden = false;
     fullscreen = false;
     layer = 0;
 
     position = { "x": 0, "y": 0 };
-
-    dragged = false;
 
     constructor(windowWidth, windowHeight, position, fullscreen, layer) {
         this.windowWidth = windowWidth;
@@ -95,6 +97,14 @@ export class Application {
 </div>
 <div class="windowContent"><!-- Content of window here --></div>
 `;
+
+            // Register event listeners
+            // Dragging
+            dragApplication(this);
+            // Maximising
+            this.htmlParent.querySelector("#maximize").addEventListener("click", this.toggleFullScreen.bind(this));
+
+
         } else {
             this.htmlParent.innerHTML = `
 <div class="windowContent"><!-- Content of window here --></div>
@@ -107,16 +117,35 @@ export class Application {
         this.updateSize();
         this.updatePosition();
 
-        dragApplication(this);
 
+    }
+
+    /*
+     * Toggle between full screen and window mode.
+     */
+    toggleFullScreen() {
+        console.log("test");
+        if (this.fullscreen) {
+            this.fullscreen = false;
+        } else {
+            this.fullscreen = true;
+        }
+
+        this.updateSize();
+        this.updatePosition();
     }
 
     /*
     * Updaing the position of actual html tag.
     */
     updatePosition() {
-        this.htmlParent.style.left = this.position.x + "px";
-        this.htmlParent.style.top = this.position.y + "px";
+        if (this.fullscreen) {
+            this.htmlParent.style.left = "0px";
+            this.htmlParent.style.top = "0px";
+        } else {
+            this.htmlParent.style.left = this.position.x + "px";
+            this.htmlParent.style.top = this.position.y + "px";
+        }
     }
 
     /*
