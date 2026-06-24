@@ -24,7 +24,7 @@ body {
     font-family: oxanium;
 
     background-color: #241f3110;
-    backdrop-filter: blue(26px);
+    backdrop-filter: blur(16px);
 
     border: solid 1px #241f31;
     border-radius: 0.25rem;
