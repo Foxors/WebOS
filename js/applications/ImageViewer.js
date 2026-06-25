@@ -1,17 +1,38 @@
 import { Application } from './Application.js';
 
 export class ImageViewer extends Application {
-    imagePath = null;
-
-    constructor(data) {
-        super();
-        this.imagePath = data["img"];
-    }
-
     init() {
-        super.init(false);
+        let win = null;
+        if (this.data['bg'] == true) {
+            win = this.sys.environment_get("windowManager").create_window(
+                this.pid,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                true,
+                false,
+                false,
+                true
+            )
+        } else {
+            win = this.sys.environment_get("windowManager").create_window(
+                this.pid,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined
+            )
+        }
 
-        this.htmlContentParent.classList.add("ImageViewer");
-        this.htmlContentParent.innerHTML = '<img src="' + this.imagePath + '">';
+        win.set_title("Image viewer - " + this.data['img']);
+
+        win.get_html().classList.add("ImageViewer");
+        win.get_html().innerHTML = `<img src="` + this.data['img'] + `">`;
+
     }
 }
