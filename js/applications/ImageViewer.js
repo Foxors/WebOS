@@ -13,7 +13,9 @@ export class ImageViewer extends Application {
                 true,
                 false,
                 false,
-                true
+                true,
+                false,
+                ""
             )
         } else {
             win = this.sys.environment_get("windowManager").create_window(
@@ -25,7 +27,9 @@ export class ImageViewer extends Application {
                 undefined,
                 undefined,
                 undefined,
-                undefined
+                undefined,
+                undefined,
+                "window"
             )
         }
 

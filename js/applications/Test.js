@@ -1,8 +1,9 @@
 import { Application } from './Application.js';
 
-import { system } from '/js/os.js';
-
 export class Test extends Application {
+
+    static appName = "Test app";
+
     init() {
         let win = this.sys.environment_get("windowManager").create_window(
             this.pid,

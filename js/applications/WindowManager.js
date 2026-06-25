@@ -14,7 +14,10 @@ class Window {
     #wid = null;
     #pid = null;
 
-    constructor(pid, wid, width, height, x, y, titleBarHidden, cosmetics, minimized, fullScreened) {
+    focusable = null;
+    dragmode = null;
+
+    constructor(pid, wid, width, height, x, y, titleBarHidden, cosmetics, minimized, fullScreened, focusable, dragmode) {
         this.#pid = pid;
         this.#wid = wid;
 
@@ -30,6 +33,9 @@ class Window {
         this.#htmlParent.setAttribute("wid", this.#wid);
         this.#htmlParent.setAttribute("pid", this.#pid);
 
+        this.focusable = focusable;
+        this.dragmode = dragmode;
+
         if (cosmetics == true) {
             this.#htmlParent.classList.add("styled");
         }
@@ -38,7 +44,7 @@ class Window {
             <div class="titleBar" id = "titleBar">
                 <p class="title" id="titleText"><!-- Title of indow here --></p>
                 <div class="options">
-                    <button id="minimize"><img src="/icons/minimize.svg"></button>
+                    <!--<button id="minimize"><img src="/icons/minimize.svg"></button>-->
                     <button id="maximize"><img src="/icons/maximize.svg"></button>
                     <button id="quit"><img src="/icons/close.svg"></button>
                 </div>
@@ -127,7 +133,7 @@ class Window {
         }
     }
 
-    set_minimized(minimize) {
+    /*set_minimized(minimize) {
         if (typeof (minimize) != typeof (true)) {
             console.error("Expected a boolean!");
             return;
@@ -135,7 +141,7 @@ class Window {
 
         this.#minimized = minimize;
         this.update();
-    }
+    }*/
 
     toggle_full_screen() {
         if (this.#fullScreen == false) {
@@ -213,9 +219,11 @@ export class WindowManager extends Application {
         titleBarHidden = false,
         cosmetics = true,
         minimized = false,
-        fullScreened = false
+        fullScreened = false,
+        focusable = true,
+        dragmode = "topBar"
     ) {
-        this.#windows[this.#windowIdGen] = new Window(pid, this.#windowIdGen, width, height, x, y, titleBarHidden, cosmetics, minimized, fullScreened)
+        this.#windows[this.#windowIdGen] = new Window(pid, this.#windowIdGen, width, height, x, y, titleBarHidden, cosmetics, minimized, fullScreened, focusable, dragmode);
         document.body.appendChild(this.#windows[this.#windowIdGen].get_window_html());
         this.#applicationLayers.push(this.#windowIdGen);
         this.layers_update();
@@ -262,13 +270,16 @@ export class WindowManager extends Application {
         }
 
         let wid = parseInt(win.getAttribute("wid"));
-        this.layers_top(wid);
+
+        if (this.#windows[wid].focusable == true) {
+            this.layers_top(wid);
+        }
 
         if (button) {
             switch (button.id) {
-                case "minimize":
-                    this.#windows[wid].set_minimized(true);
-                    break;
+                /*case "minimize":
+                    this.hide_window(wid);
+                    break;*/
                 case "maximize":
                     this.#windows[wid].toggle_full_screen();
                     break;
@@ -279,10 +290,39 @@ export class WindowManager extends Application {
             return;
         }
 
-        if (winTitleBar) {
+        if (winTitleBar && this.#windows[wid].dragmode == "topBar") {
+            this.#windows[wid].start_dragging(e);
+        } else if (this.#windows[wid].dragmode == "window") {
             this.#windows[wid].start_dragging(e);
         }
     }
+
+    /*hide_window(wid) {
+        if (wid in this.#applicationLayers) {
+            this.#windows[wid].set_minimized(true);
+            this.#applicationLayers.splice(this.#applicationLayers.indexOf(wid), 1);
+        }
+    }
+    show_window(wid) {
+        if (!wid in this.#applicationLayers) {
+            this.#windows[wid].set_minimized(false);
+            this.#applicationLayers.push(wid);
+        }
+    }
+
+    show_windows_of_process(pid) {
+        if (typeof (pid) != typeof (0)) {
+            console.error("Expected a int!");
+            return;
+        }
+
+        for (let wid in this.#windows) {
+            if (this.#windows[wid].get_pid() == pid) {
+                this.#windows[wid].set_minimized(false);
+                this.#applicationLayers.push(wid);
+            }
+        }
+    }*/
 
     layers_up(wid) {
         let i = this.#applicationLayers.indexOf(wid);

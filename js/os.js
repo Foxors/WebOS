@@ -1,23 +1,29 @@
 import { Application } from './applications/Application.js';
 import { WindowManager } from './applications/WindowManager.js';
 import { ImageViewer } from './applications/ImageViewer.js';
+import { Docki } from './applications/Docki.js';
 import { Test } from './applications/Test.js';
+import { Intro } from './applications/Intro.js';
 
 class Mosdule {
-
-    availableApplications = [ImageViewer, Test, WindowManager];
     #porcesses = {};
     #environmentVariables = {};
     #pidGen = 0;
 
     constructor() {
         this.init();
+
     }
 
     init() {
+        this.environment_set("availableApplications", [ImageViewer, Test, WindowManager, Intro]);
+        this.environment_set("userApplications", [Test, Intro]);
+        console.log("Environment vars: " + this.#environmentVariables);
+
         this.application_start(WindowManager);
         this.application_start(ImageViewer, { "bg": true, "img": "https://fastly.picsum.photos/id/152/3888/2592.jpg?hmac=M1xv1MzO9xjf5-tz1hGR9bQpNt973ANkqfEVDW0-WYU" });
-        this.application_start(Test);
+        this.application_start(Docki);
+        this.application_start(Intro);
     }
 
     environment_set(key, value) {
@@ -30,11 +36,11 @@ class Mosdule {
 
     application_start(applicationClass, data = {}) {
         if (!applicationClass instanceof Application) {
-            console.error("Tryed starting a non application as application!");
+            console.warn("Tryed starting a non application as application!");
             return;
         }
 
-        if (!applicationClass in this.availableApplications) {
+        if (!applicationClass in this.environment_get("availableApplications")) {
             console.error("Tryed starting a not available application!");
             return;
         }
