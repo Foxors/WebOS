@@ -6,6 +6,7 @@ class Mosdule {
 
     availableApplications = [ImageViewer, Test];
     runningApplications = {};
+    applicationLayers = [];
     idGen = 0;
 
     constructor() {
@@ -41,8 +42,11 @@ class Mosdule {
 
         this.runningApplications[this.idGen] = newApplication;
         newApplication.init();
-        newApplication.htmlParent.setAttribute("windowId", this.idGen);
+        newApplication.htmlParent.setAttribute("pid", this.idGen);
         document.body.appendChild(newApplication.htmlParent);
+
+        this.applicationLayers.push(this.idGen);
+        this.layers_update();
 
         this.idGen++;
     }
@@ -58,6 +62,76 @@ class Mosdule {
         targetApplication.exit();
         document.body.removeChild(targetApplication.htmlParent);
         delete this.runningApplications[pid];
+    }
+
+    layers_up(pid) {
+        let i = this.applicationLayers.indexOf(pid);
+
+
+        if (i < 0) {
+            console.warn("Tryed to change layer of non exisisting layer pid.");
+            return;
+        }
+
+        if (i >= this.applicationLayers.length - 1) {
+            return;
+        }
+
+        // Switch with next pid.
+        let temp = this.applicationLayers[i + 1];
+        this.applicationLayers[i + 1] = pid;
+        this.applicationLayers[i] = temp;
+
+        this.layers_update();
+    }
+
+    layers_down(pid) {
+        let i = this.applicationLayers.indexOf(pid);
+
+
+        if (i < 0) {
+            console.warn("Tryed to change layer of non exisisting layer pid.");
+            return;
+        }
+
+        if (i <= 0) {
+            return;
+        }
+
+        // Switch with next pid.
+        let temp = this.applicationLayers[i - 1];
+        this.applicationLayers[i - 1] = pid;
+        this.applicationLayers[i] = temp;
+
+        this.layers_update();
+    }
+
+    layers_top(pid) {
+        if (this.applicationLayers.indexOf(pid) < 0) {
+            console.warn("Tryed to change layer of non exisisting layer pid.");
+            return;
+        }
+
+        while (this.applicationLayers.indexOf(pid) < this.applicationLayers.length - 1) {
+            this.layers_up(pid);
+        }
+    }
+
+    layers_bottom(pid) {
+        if (this.applicationLayers.indexOf(pid) < 0) {
+            console.warn("Tryed to change layer of non exisisting layer pid.");
+            return;
+        }
+
+        while (this.applicationLayers.indexOf(pid) > 0) {
+            this.layers_down(pid);
+        }
+    }
+
+    layers_update() {
+        for (let i = 0; i < this.applicationLayers.length; i++) {
+            this.runningApplications[this.applicationLayers[i]].htmlParent.style.zIndex = `${i}`;
+        }
     }
 }
 

@@ -79,6 +79,7 @@ export class Application {
         var lastMouseY = 0;
         var deltaX = 0;
         var deltaY = 0;
+        var pid = this.pid;
 
         // Make draggable
         let titleBar = application.htmlParent.querySelector("#titleBar");
@@ -90,6 +91,9 @@ export class Application {
             if (e.target.nodeName == "IMG" || e.target.nodeName == "BUTTON") {
                 return;
             }
+
+            system.layers_top(pid);
+            console.log(pid);
 
             // Cancel when in full screen
             if (application.fullscreen) {
@@ -134,6 +138,7 @@ export class Application {
     moveToDesktop() {
         this.minimized = false;
         this.htmlParent.style.display = "auto";
+        system.layers_top(this.pid);
     }
 
     /*
@@ -152,6 +157,7 @@ export class Application {
             this.fullScreen = false;
         } else {
             this.fullScreen = true;
+            system.layers_top(this.pid);
         }
 
         this.updateSize();
