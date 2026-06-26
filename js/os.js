@@ -21,7 +21,8 @@ class Mosdule {
         console.log("Environment vars: " + this.#environmentVariables);
 
         this.application_start(WindowManager);
-        this.application_start(ImageViewer, { "bg": true, "img": "https://fastly.picsum.photos/id/152/3888/2592.jpg?hmac=M1xv1MzO9xjf5-tz1hGR9bQpNt973ANkqfEVDW0-WYU" });
+        // Photo by <a href="https://unsplash.com/@ychemerys?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Yuriy Chemerys</a> on <a href="https://unsplash.com/photos/selective-focus-photography-of-orange-fox-during-daytime-BTzQWyRK474?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+        this.application_start(ImageViewer, { "bg": true, "img": "/images/background.jpg" });
         this.application_start(Docki);
         this.application_start(Intro);
     }

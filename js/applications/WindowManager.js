@@ -197,8 +197,8 @@ export class WindowManager extends Application {
     init() {
         // Set a sys environment variable so that applications can access this object.
         this.sys.environment_set("windowManager", this);
-        this.sys.environment_set("windowDefaultSize", [window.innerWidth / 3, window.innerHeight / 3]);
-        this.sys.environment_set("windowDefaultPos", [window.innerWidth / 2 - window.innerWidth / 3, window.innerHeight / 2 - window.innerHeight / 3]);
+        this.sys.environment_set("windowDefaultSize", [window.innerWidth / 2, window.innerHeight / 2]);
+        this.sys.environment_set("windowDefaultPos", [window.innerWidth / 4, window.innerHeight / 4]);
         // Add event listener.
         document.addEventListener("mousedown", this.click_handler.bind(this));
     }
