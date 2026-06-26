@@ -1,0 +1,28 @@
+.windowContent.JsBar {
+    color: #f6f5f4;
+    font-family: oxanium;
+
+    background-color: #241f3170;
+    backdrop-filter: blur(16px);
+
+    border: none;
+
+    box-shadow: 0 5px 6px 2px #32323240;
+
+    padding: 5px 10px 5px 10px;
+
+    display: flex;
+    gap: 12px;
+
+    justify-content: center;
+    justify-items: center;
+
+    align-items: center;
+    align-content: center;
+
+    width: 100%;
+}
+
+.windowContent.JsBar p {
+
+}

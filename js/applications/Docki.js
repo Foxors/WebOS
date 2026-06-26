@@ -15,7 +15,7 @@ export class Docki extends Application {
             false,
             false,
             false,
-            "window"
+            ""
         );
 
         this.win.set_title("Docki");
