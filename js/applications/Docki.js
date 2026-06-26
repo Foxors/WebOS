@@ -46,7 +46,8 @@ export class Docki extends Application {
         this.win.get_html().innerHTML = ``;
         this.applicationList.forEach(item => {
             let newButton = document.createElement("button");
-            newButton.innerText = item.appName;
+            newButton.innerHTML = item.icon;
+            newButton.style.background = item.iconBg;
             newButton.classList.add("runButton");
             newButton.setAttribute("application", item.name);
             this.win.get_html().appendChild(newButton);
