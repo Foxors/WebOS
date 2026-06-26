@@ -45,8 +45,8 @@ class Window {
                 <p class="title" id="titleText"><!-- Title of indow here --></p>
                 <div class="options">
                     <!--<button id="minimize"><img src="/icons/minimize.svg"></button>-->
-                    <button id="maximize"><img src="/icons/maximize.svg"></button>
-                    <button id="quit"><img src="/icons/close.svg"></button>
+                    <button id="maximize"><img src="icons/maximize.svg"></button>
+                    <button id="quit"><img src="icons/close.svg"></button>
                 </div>
             </div>
             <div class="windowContent"><!-- Content of window here --></div>`;
