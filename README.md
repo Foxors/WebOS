@@ -21,7 +21,7 @@ itself so other applications can make windows with it, by accessing that var.
 
 ## Current available applications
 
-> [!INFO]
+> [!NOTE]
 > Some here are in the OS but not directly visible to users. For example the
 > Window manager. You can't start it yourself the OS does it for you.
 
