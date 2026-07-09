@@ -1,0 +1,11 @@
+.windowContent.Texti {
+    padding: 0 !important;
+    margin: 0;
+    overflow: hidden !important;
+}
+
+.windowContent.Texti textarea {
+    resize: none;
+    width: 100%;
+    height: 100%;
+}

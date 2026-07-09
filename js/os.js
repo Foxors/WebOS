@@ -5,6 +5,7 @@ import { Docki } from './applications/Docki.js';
 import { Test } from './applications/Test.js';
 import { Intro } from './applications/Intro.js';
 import { JsBar } from './applications/jsBar.js';
+import { Texti } from './applications/Texti.js';
 import { NetifyBrowser } from './applications/NetifyBrowser.js';
 
 class Mosdule {
@@ -18,8 +19,8 @@ class Mosdule {
     }
 
     init() {
-        this.environment_set("availableApplications", [ImageViewer, Test, WindowManager, Intro, JsBar, NetifyBrowser]);
-        this.environment_set("userApplications", [Test, Intro, NetifyBrowser]);
+        this.environment_set("availableApplications", [ImageViewer, Test, WindowManager, Intro, JsBar, NetifyBrowser, Texti]);
+        this.environment_set("userApplications", [Test, Intro, NetifyBrowser, Texti]);
         console.log("Environment vars: " + this.#environmentVariables);
 
         this.application_start(WindowManager);
